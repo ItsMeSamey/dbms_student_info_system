@@ -119,7 +119,7 @@ function StudentForm({ onSuccess }: StudentFormProps) {
           <button
             type="button"
             onClick={onSuccess}
-            className="inline-block align-baseline font-bold text-sm text-red-300 hover:text-gray-800"
+            className="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800"
             disabled={loading}
           >
             Cancel
