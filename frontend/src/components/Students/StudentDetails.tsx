@@ -158,7 +158,7 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-xl">
-      <button onClick={onBack} className="mb-6 bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition duration-200 ease-in-out">
+      <button onClick={onBack} className="mb-6 bg-gray-300 text-gray-100 px-4 py-2 rounded-md hover:bg-gray-400 transition duration-200 ease-in-out">
         Back to Students List
       </button>
       <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Student Details: {student.name}</h2>
