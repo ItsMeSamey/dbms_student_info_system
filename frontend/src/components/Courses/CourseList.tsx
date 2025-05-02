@@ -1,4 +1,3 @@
-// src/components/Courses/CourseList.tsx
 import { useEffect, useState } from 'react';
 import { Course } from '../../types/types';
 import { getCourses, deleteCourse } from '../../api/api';
@@ -33,7 +32,7 @@ function CourseList({ onAddCourse }: CourseListProps) {
     if (window.confirm('Are you sure you want to delete this course?')) {
       try {
         await deleteCourse(id);
-        fetchCourses(); // Refresh the list
+        fetchCourses();
       } catch (err) {
         alert('Failed to delete course');
         console.error(err);
@@ -60,38 +59,38 @@ function CourseList({ onAddCourse }: CourseListProps) {
       </button>
       {courses.length === 0 ? (
         <p className="text-gray-600">No courses found.</p>
-      ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 rounded-md overflow-hidden">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">ID</th>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Code</th>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Title</th>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Credits</th>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
+      ): (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200 rounded-md overflow-hidden">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">ID</th>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Code</th>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Title</th>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Credits</th>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {courses.map((course, index) => (
+                <tr key={course.id} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100 transition duration-150 ease-in-out`}>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">{course.id}</td>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">{course.code}</td>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">{course.title}</td>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">{course.credits}</td>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">
+                    <button
+                      onClick={() => handleDelete(course.id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition duration-200 ease-in-out text-xs"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {courses.map((course, index) => (
-                  <tr key={course.id} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100 transition duration-150 ease-in-out`}>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">{course.id}</td>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">{course.code}</td>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">{course.title}</td>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">{course.credits}</td>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">
-                      <button
-                        onClick={() => handleDelete(course.id)}
-                        className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition duration-200 ease-in-out text-xs"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
         )}
     </div>
   );

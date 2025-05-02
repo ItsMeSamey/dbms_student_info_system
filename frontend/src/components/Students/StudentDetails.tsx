@@ -1,6 +1,6 @@
-// src/components/Students/StudentDetails.tsx
+
 import { useEffect, useState } from 'react';
-import { Student, StudentTranscript, Grade, Enrollment } from '../../types/types'; // Import Enrollment
+import { Student, StudentTranscript, Grade, Enrollment } from '../../types/types';
 import { getStudent, getStudentTranscript, calculateStudentGPA, addGrade, updateGrade, deleteGrade, getEnrollments } from '../../api/api';
 
 interface StudentDetailsProps {
@@ -17,16 +17,16 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
   const [showAddGradeModal, setShowAddGradeModal] = useState(false);
   const [selectedEnrollmentId, setSelectedEnrollmentId] = useState<number | null>(null);
   const [gradeForm, setGradeForm] = useState<Grade>({ enrollment_id: 0, grade: undefined, semester: '' });
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]); // To select enrollment for grading
-  const [isEditingGrade, setIsEditingGrade] = useState(false); // To track if we are editing or adding a grade
-  const [currentGradeId, setCurrentGradeId] = useState<number | null>(null); // To store the ID of the grade being edited
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [isEditingGrade, setIsEditingGrade] = useState(false);
+  const [currentGradeId, setCurrentGradeId] = useState<number | null>(null);
 
 
   useEffect(() => {
     fetchStudentDetails();
     fetchStudentTranscript();
     fetchStudentGPA();
-    fetchStudentEnrollments(); // Fetch enrollments for grading
+    fetchStudentEnrollments();
   }, [studentId]);
 
   const fetchStudentDetails = async () => {
@@ -64,7 +64,7 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
   const fetchStudentEnrollments = async () => {
     try {
       const response = await getEnrollments();
-      // Filter enrollments for the current student
+
       const studentEnrollments = response.data.filter(enrollment => enrollment.student_id === studentId);
       setEnrollments(studentEnrollments);
     } catch (err) {
@@ -76,8 +76,8 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
 
   const handleAddGradeClick = (enrollmentId: number) => {
     setSelectedEnrollmentId(enrollmentId);
-    setGradeForm({ enrollment_id: enrollmentId, grade: undefined, semester: '' }); // Reset form
-    setIsEditingGrade(false); // We are adding a new grade
+    setGradeForm({ enrollment_id: enrollmentId, grade: undefined, semester: '' });
+    setIsEditingGrade(false);
     setCurrentGradeId(null);
     setShowAddGradeModal(true);
   };
@@ -85,8 +85,8 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
   const handleEditGradeClick = (grade: Grade) => {
     setSelectedEnrollmentId(grade.enrollment_id);
     setGradeForm({ enrollment_id: grade.enrollment_id, grade: grade.grade, semester: grade.semester });
-    setIsEditingGrade(true); // We are editing an existing grade
-    setCurrentGradeId(grade.id!); // Store the grade ID
+    setIsEditingGrade(true);
+    setCurrentGradeId(grade.id!);
     setShowAddGradeModal(true);
   }
 
@@ -96,8 +96,8 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
       try {
         await deleteGrade(gradeId);
         alert('Grade deleted successfully!');
-        fetchStudentTranscript(); // Refresh transcript
-        fetchStudentGPA(); // Recalculate GPA
+        fetchStudentTranscript();
+        fetchStudentGPA();
       } catch (err) {
         alert('Failed to delete grade');
         console.error(err);
@@ -123,17 +123,17 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
 
     try {
       if (isEditingGrade && currentGradeId !== null) {
-        // Update existing grade
+
         await updateGrade(currentGradeId, gradeForm);
         alert('Grade updated successfully!');
       } else {
-        // Add new grade
+
         await addGrade(gradeForm);
         alert('Grade added successfully!');
       }
       setShowAddGradeModal(false);
-      fetchStudentTranscript(); // Refresh transcript
-      fetchStudentGPA(); // Recalculate GPA
+      fetchStudentTranscript();
+      fetchStudentGPA();
 
     } catch (err: any) {
       setError(`Failed to save grade: ${err.response?.data?.error || err.message}`);
@@ -163,9 +163,9 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
       </button>
       <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Student Details: {student.name}</h2>
 
-      <div className="mb-6 p-4 bg-gray-50 rounded-md"> {/* Added background and padding */}
-        <h3 className="text-xl font-semibold text-gray-700 mb-3">Personal Information</h3> {/* Styled heading */}
-        <p className="mb-1"><strong className="font-medium text-gray-700">ID:</strong> {student.id}</p> {/* Styled text */}
+      <div className="mb-6 p-4 bg-gray-50 rounded-md">
+        <h3 className="text-xl font-semibold text-gray-700 mb-3">Personal Information</h3>
+        <p className="mb-1"><strong className="font-medium text-gray-700">ID:</strong> {student.id}</p>
         <p className="mb-1"><strong className="font-medium text-gray-700">Name:</strong> {student.name}</p>
         <p className="mb-1"><strong className="font-medium text-gray-700">Date of Birth:</strong> {student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString() : 'N/A'}</p>
         <p className="mb-1"><strong className="font-medium text-gray-700">Address:</strong> {student.address || 'N/A'}</p>
@@ -188,7 +188,7 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
                   <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Credits</th>
                   <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Semester</th>
                   <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Grade</th>
-                  {/* Add column for actions if needed */}
+
                 </tr>
               </thead>
               <tbody>
@@ -199,7 +199,7 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
                     <td className="py-3 px-4 border-b text-sm text-gray-700">{course.credits}</td>
                     <td className="py-3 px-4 border-b text-sm text-gray-700">{course.semester || 'N/A'}</td>
                     <td className="py-3 px-4 border-b text-sm text-gray-700">{course.grade !== -1 ? course.grade.toFixed(2) : 'N/A'}</td>
-                    {/* Actions column could go here */}
+
                   </tr>
                 ))}
               </tbody>
@@ -224,7 +224,7 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
               <option value={0}>-- Select Enrollment --</option>
               {enrollments.map(enrollment => (
                 <option key={enrollment.id} value={enrollment.id}>
-                  Enrollment ID: {enrollment.id} (Course ID: {enrollment.course_id}) {/* Display more info if needed */}
+                  Enrollment ID: {enrollment.id} (Course ID: {enrollment.course_id})
                 </option>
               ))}
             </select>
@@ -236,11 +236,11 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
 
       </div>
 
-      {/* Add/Edit Grade Modal */}
+
       {showAddGradeModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"> {/* Added padding for mobile */}
-          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full"> {/* Increased shadow and max-width */}
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">{isEditingGrade ? 'Edit Grade' : 'Add Grade'}</h3> {/* Dynamic title */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">{isEditingGrade ? 'Edit Grade' : 'Add Grade'}</h3>
             <form onSubmit={handleGradeFormSubmit}>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="grade">
@@ -250,14 +250,14 @@ function StudentDetails({ studentId, onBack }: StudentDetailsProps) {
                   type="number"
                   id="grade"
                   name="grade"
-                  value={gradeForm.grade ?? ''} // Use ?? '' to handle undefined
+                  value={gradeForm.grade ?? ''}
                   onChange={handleGradeFormChange}
                   step="0.01"
                   className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
               </div>
-              <div className="mb-6"> {/* Increased bottom margin */}
+              <div className="mb-6">
                 <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="semester">
                   Semester:
                 </label>

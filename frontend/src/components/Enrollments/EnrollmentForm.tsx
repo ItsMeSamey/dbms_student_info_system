@@ -1,11 +1,9 @@
-// src/components/Enrollments/EnrollmentForm.tsx
 import { useEffect, useState } from 'react';
 import { Enrollment, Student, Course } from '../../types/types';
 import { createEnrollment, getStudents, getCourses } from '../../api/api';
 
 interface EnrollmentFormProps {
   onSuccess: () => void;
-  // Add onError handling if needed
 }
 
 function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
@@ -61,7 +59,7 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
     try {
       await createEnrollment(enrollment);
       alert('Enrollment created successfully!');
-      onSuccess(); // Navigate back to the list or another page
+      onSuccess();
     } catch (err: any) {
       setError(`Failed to create enrollment: ${err.response?.data?.error || err.message}`);
       console.error(err);

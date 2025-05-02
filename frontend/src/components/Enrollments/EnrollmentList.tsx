@@ -1,4 +1,3 @@
-// src/components/Enrollments/EnrollmentList.tsx
 import { useEffect, useState } from 'react';
 import { Enrollment, Student, Course } from '../../types/types';
 import { getEnrollments, deleteEnrollment, getStudents, getCourses } from '../../api/api';
@@ -51,7 +50,7 @@ function EnrollmentList({ onAddEnrollment }: EnrollmentListProps) {
     if (window.confirm('Are you sure you want to delete this enrollment?')) {
       try {
         await deleteEnrollment(id);
-        fetchData(); // Refresh the list
+        fetchData();
       } catch (err) {
         alert('Failed to delete enrollment');
         console.error(err);
@@ -78,38 +77,38 @@ function EnrollmentList({ onAddEnrollment }: EnrollmentListProps) {
       </button>
       {enrollments.length === 0 ? (
         <p className="text-gray-600">No enrollments found.</p>
-      ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 rounded-md overflow-hidden">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">ID</th>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Student</th>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Course</th>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Enrollment Date</th>
-                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
+      ): (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200 rounded-md overflow-hidden">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">ID</th>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Student</th>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Course</th>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Enrollment Date</th>
+                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {enrollments.map((enrollment, index) => (
+                <tr key={enrollment.id} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100 transition duration-150 ease-in-out`}>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">{enrollment.id}</td>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">{getStudentName(enrollment.student_id)}</td>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">{getCourseTitle(enrollment.course_id)}</td>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">{enrollment.enrollment_date ? new Date(enrollment.enrollment_date).toLocaleDateString() : 'N/A'}</td>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">
+                    <button
+                      onClick={() => handleDelete(enrollment.id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition duration-200 ease-in-out text-xs"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {enrollments.map((enrollment, index) => (
-                  <tr key={enrollment.id} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100 transition duration-150 ease-in-out`}>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">{enrollment.id}</td>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">{getStudentName(enrollment.student_id)}</td>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">{getCourseTitle(enrollment.course_id)}</td>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">{enrollment.enrollment_date ? new Date(enrollment.enrollment_date).toLocaleDateString() : 'N/A'}</td>
-                    <td className="py-3 px-4 border-b text-sm text-gray-700">
-                      <button
-                        onClick={() => handleDelete(enrollment.id)}
-                        className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition duration-200 ease-in-out text-xs"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
         )}
     </div>
   );

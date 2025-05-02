@@ -22,15 +22,15 @@ CREATE TABLE enrollments (
   student_id INT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   course_id INT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
   enrollment_date DATE DEFAULT CURRENT_DATE,
-  UNIQUE (student_id, course_id) -- Ensure a student can only enroll in a course once
+  UNIQUE (student_id, course_id)
 );
 
 -- Create grades table
 CREATE TABLE grades (
   id SERIAL PRIMARY KEY,
   enrollment_id INT NOT NULL REFERENCES enrollments(id) ON DELETE CASCADE,
-  grade DECIMAL(3, 2), -- Example: 4.00 for GPA
+  grade DECIMAL(3, 2),
   semester VARCHAR(50),
-  UNIQUE (enrollment_id, semester) -- Ensure only one grade per enrollment per semester
+  UNIQUE (enrollment_id, semester)
 );
 

@@ -1,11 +1,9 @@
-// src/components/Students/StudentForm.tsx
 import { useState } from 'react';
 import { Student } from '../../types/types';
 import { createStudent } from '../../api/api';
 
 interface StudentFormProps {
   onSuccess: () => void;
-  // Add onError handling if needed
 }
 
 function StudentForm({ onSuccess }: StudentFormProps) {
@@ -31,7 +29,7 @@ function StudentForm({ onSuccess }: StudentFormProps) {
     try {
       await createStudent(student);
       alert('Student created successfully!');
-      onSuccess(); // Navigate back to the list or another page
+      onSuccess();
     } catch (err: any) {
       setError(`Failed to create student: ${err.response?.data?.error || err.message}`);
       console.error(err);
@@ -41,11 +39,11 @@ function StudentForm({ onSuccess }: StudentFormProps) {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-xl max-w-md mx-auto"> {/* Increased padding and shadow */}
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Add New Student</h2> {/* Centered title */}
+    <div className="bg-white p-8 rounded-lg shadow-xl max-w-md mx-auto">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Add New Student</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="name"> {/* Styled label */}
+          <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="name">
             Name:
           </label>
           <input
@@ -54,7 +52,7 @@ function StudentForm({ onSuccess }: StudentFormProps) {
             name="name"
             value={student.name}
             onChange={handleChange}
-            className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" // Styled input
+            className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
         </div>
@@ -80,7 +78,7 @@ function StudentForm({ onSuccess }: StudentFormProps) {
             name="address"
             value={student.address}
             onChange={handleChange}
-            className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-24 resize-none" // Styled textarea
+            className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-24 resize-none"
           ></textarea>
         </div>
         <div className="mb-4">
@@ -109,11 +107,11 @@ function StudentForm({ onSuccess }: StudentFormProps) {
             className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        {error && <p className="text-red-600 text-xs italic mb-4">{error}</p>} {/* Styled error message */}
+        {error && <p className="text-red-600 text-xs italic mb-4">{error}</p>}
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-200 ease-in-out ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} // Styled submit button
+            className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-200 ease-in-out ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
           >
             {loading ? 'Saving...' : 'Add Student'}
@@ -121,7 +119,7 @@ function StudentForm({ onSuccess }: StudentFormProps) {
           <button
             type="button"
             onClick={onSuccess}
-            className="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800" // Styled cancel button
+            className="inline-block align-baseline font-bold text-sm text-red-300 hover:text-gray-800"
             disabled={loading}
           >
             Cancel
