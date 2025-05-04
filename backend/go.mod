@@ -1,6 +1,6 @@
 module backend
 
-go 1.24.2
+go 1.24.0
 
 require (
 	github.com/ItsMeSamey/go_utils v1.0.5
