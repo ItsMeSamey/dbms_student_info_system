@@ -45,7 +45,7 @@ CREATE TABLE grades (
   UNIQUE (enrollment_id, semester)
 );
 
--- Seed data - NOTE: Passwords should be hashed in a real application
+-- Sample data - NOTE: Passwords should be hashed in a real application
 INSERT INTO students (name, password, date_of_birth, address, contact, program) VALUES
 ('Alice Smith', '', '2002-05-15', '123 Main St, Anytown', '555-1234', 'Computer Science'),
 ('Bob Johnson', '', '2003-11-20', '456 Oak Ave, Somewhere', '555-5678', 'Electrical Engineering'),
