@@ -2,6 +2,7 @@ package handlers
 
 import (
   "context"
+  "errors"
   "time"
 
   "backend/common"
@@ -10,7 +11,6 @@ import (
 
   "github.com/gofiber/fiber/v3"
   "github.com/golang-jwt/jwt/v5"
-  "github.com/jackc/pgx/v5"
 )
 
 var JwtSecret = []byte(common.MustGetEnv("JWT_SECRET"))
@@ -46,43 +46,25 @@ func Login(c fiber.Ctx) error {
     return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "ID, password, and valid role are required"})
   }
 
-  var storedPassword string
-  var dateOfBirth *time.Time
-  var query string
+  var authenticatedUserID int
+  var authenticatedUserRole string
 
-  if loginReq.Role == "student" {
-    query = `SELECT password, date_of_birth FROM students WHERE id = $1`
-  } else {
-    query = `SELECT password, date_of_birth FROM faculty WHERE id = $1`
-  }
+  query := `SELECT user_id, user_role FROM authenticate_user($1, $2, $3)`
+  err := database.DB.QueryRow(context.Background(), query,
+    loginReq.ID,
+    loginReq.Password,
+    loginReq.Role,
+  ).Scan(&authenticatedUserID, &authenticatedUserRole)
 
-  err := database.DB.QueryRow(context.Background(), query, loginReq.ID).Scan(&storedPassword, &dateOfBirth)
-
-  if err == pgx.ErrNoRows {
-    return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid credentials"})
-  } else if err != nil {
-    return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Database error during login", "details": err.Error()})
-  }
-
-  if storedPassword == "" {
-    if dateOfBirth == nil {
-      return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid credentials"})
-    }
-    dobPassword := dateOfBirth.Format("2006-01-02")
-    if loginReq.Password != dobPassword {
-      return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid credentials"})
-    }
-  } else {
-    if loginReq.Password != storedPassword {
-      return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid credentials"})
-    }
-  }
-
-  token, err := generateJWT(loginReq.ID, loginReq.Role)
   if err != nil {
-    return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to generate token", "details": err.Error()})
+    return handleDatabaseError(c, err)
   }
 
-  return c.JSON(models.AuthResponse{Token: token, Role: loginReq.Role, ID: loginReq.ID})
+  token, err := generateJWT(authenticatedUserID, authenticatedUserRole)
+  if err != nil {
+    return sendInternalServerError(c, errors.New("Failed to generate token"))
+  }
+
+  return c.JSON(models.AuthResponse{Token: token, Role: authenticatedUserRole, ID: authenticatedUserID})
 }
 
