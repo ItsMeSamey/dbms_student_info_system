@@ -1,55 +1,75 @@
 package models
 
 import (
-	"time"
+  "time"
 )
 
-// Student represents a student in the system
+// Database Models
+
 type Student struct {
-	ID          int       `json:"id"`
-	Name        string    `json:"name"`
-	DateOfBirth time.Time `json:"date_of_birth"`
-	Address     string    `json:"address"`
-	Contact     string    `json:"contact"`
-	Program     string    `json:"program"`
+  ID          int        `json:"id,omitempty"`
+  Name        string     `json:"name"`
+  Password    string     `json:"password"`
+  DateOfBirth time.Time `json:"date_of_birth"`
+  Address     string    `json:"address,omitempty"`
+  Contact     string    `json:"contact,omitempty"`
+  Program     string    `json:"program,omitempty"`
 }
 
-// Course represents a course offered
+type Faculty struct {
+  ID          int       `json:"id,omitempty"`
+  Name        string    `json:"name"`
+  Password    string    `json:"password"`
+  DateOfBirth time.Time `json:"date_of_birth"`
+  Info        string   `json:"info,omitempty"`
+}
+
 type Course struct {
-	ID      int    `json:"id"`
-	Code    string `json:"code"`
-	Title   string `json:"title"`
-	Credits int    `json:"credits"`
+  ID      int     `json:"id,omitempty"`
+  Code    string  `json:"code"`
+  Title   string  `json:"title"`
+  Credits float32 `json:"credits"`
 }
 
-// Enrollment represents a student's enrollment in a course
 type Enrollment struct {
-	ID             int       `json:"id"`
-	StudentID      int       `json:"student_id"`
-	CourseID       int       `json:"course_id"`
-	EnrollmentDate time.Time `json:"enrollment_date"`
+  ID             int       `json:"id,omitempty"`
+  StudentID      int       `json:"student_id"`
+  CourseID       int       `json:"course_id"`
+  EnrollmentDate time.Time `json:"enrollment_date"`
 }
 
-// Grade represents a grade received by a student in an enrollment
 type Grade struct {
-	ID           int     `json:"id"`
-	EnrollmentID int     `json:"enrollment_id"`
-	Grade        float64 `json:"grade"`
-	Semester     string  `json:"semester"`
+  ID           int      `json:"id,omitempty"`
+  EnrollmentID int      `json:"enrollment_id"`
+  Grade        *float64 `json:"grade"`
+  Semester     string   `json:"semester"`
 }
 
-// StudentTranscript represents a student's transcript with course and grade information
+// API Models
+
 type StudentTranscript struct {
-	StudentID   int                `json:"student_id"`
-	StudentName string             `json:"student_name"`
-	Courses     []TranscriptCourse `json:"courses"`
+  StudentID   int                `json:"student_id"`
+  StudentName string             `json:"student_name"`
+  Courses     []TranscriptCourse `json:"courses"`
 }
 
-// TranscriptCourse represents a course and the associated grade in a transcript
 type TranscriptCourse struct {
-	CourseCode  string  `json:"course_code"`
-	CourseTitle string  `json:"course_title"`
-	Credits     int     `json:"credits"`
-	Grade       float64 `json:"grade"`
-	Semester    string  `json:"semester"`
+  CourseCode  string   `json:"course_code"`
+  CourseTitle string   `json:"course_title"`
+  Credits     int      `json:"credits"`
+  Grade       *float64 `json:"grade"`
+  Semester    *string  `json:"semester"`
 }
+
+type LoginRequest struct {
+  ID       int    `json:"id"`
+  Password string `json:"password"`
+  Role     string `json:"role"`
+}
+
+type AuthResponse struct {
+  Token string `json:"token"`
+  Role  string `json:"role"`
+  ID    int    `json:"id"`
+}
+

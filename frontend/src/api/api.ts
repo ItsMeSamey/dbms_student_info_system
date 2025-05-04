@@ -1,6 +1,5 @@
-// src/api/api.ts
 import axios from 'axios';
-import { Student, Course, Enrollment, Grade, StudentTranscript } from '../types/types';
+import { Student, Course, Enrollment, Grade, StudentTranscript, LoginRequest, AuthResponse } from '../types/types';
 
 const API_URL = 'http://127.0.0.1:3000';
 
@@ -11,7 +10,16 @@ const api = axios.create({
   },
 });
 
-// --- Student API Calls ---
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+  }
+};
+
+export const login = (credentials: LoginRequest) => api.post<AuthResponse>('/login', credentials);
+
 export const getStudents = () => api.get<Student[]>('/students');
 export const getStudent = (id: number) => api.get<Student>(`/students/${id}`);
 export const createStudent = (student: Student) => api.post<Student>('/students', student);
@@ -20,20 +28,17 @@ export const deleteStudent = (id: number) => api.delete<void>(`/students/${id}`)
 export const getStudentTranscript = (id: number) => api.get<StudentTranscript>(`/students/${id}/transcript`);
 export const calculateStudentGPA = (id: number) => api.get<{ student_id: number; gpa: number; message?: string }>(`/students/${id}/gpa`);
 
-// --- Course API Calls ---
 export const getCourses = () => api.get<Course[]>('/courses');
 export const getCourse = (id: number) => api.get<Course>(`/courses/${id}`);
 export const createCourse = (course: Course) => api.post<Course>('/courses', course);
 export const updateCourse = (id: number, course: Course) => api.put<void>(`/courses/${id}`, course);
 export const deleteCourse = (id: number) => api.delete<void>(`/courses/${id}`);
 
-// --- Enrollment API Calls ---
 export const getEnrollments = () => api.get<Enrollment[]>('/enrollments');
 export const getEnrollment = (id: number) => api.get<Enrollment>(`/enrollments/${id}`);
 export const createEnrollment = (enrollment: Enrollment) => api.post<Enrollment>('/enrollments', enrollment);
 export const deleteEnrollment = (id: number) => api.delete<void>(`/enrollments/${id}`);
 
-// --- Grade API Calls ---
 export const getGrades = () => api.get<Grade[]>('/grades');
 export const getGrade = (id: number) => api.get<Grade>(`/grades/${id}`);
 export const addGrade = (grade: Grade) => api.post<Grade>('/grades', grade);

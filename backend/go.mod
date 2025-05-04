@@ -6,6 +6,7 @@ require (
 	github.com/ItsMeSamey/go_utils v1.0.5
 	github.com/bytedance/sonic v1.13.2
 	github.com/gofiber/fiber/v3 v3.0.0-beta.4
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/jackc/pgx/v5 v5.7.4
 	github.com/rs/zerolog v1.34.0
 )

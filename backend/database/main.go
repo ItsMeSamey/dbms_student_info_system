@@ -1,6 +1,6 @@
 package database
 
 func init() {
-	connectDB()
+  connectDB()
 }
 

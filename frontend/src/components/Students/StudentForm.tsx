@@ -9,6 +9,7 @@ interface StudentFormProps {
 function StudentForm({ onSuccess }: StudentFormProps) {
   const [student, setStudent] = useState<Student>({
     name: '',
+    password: '',
     date_of_birth: '',
     address: '',
     contact: '',
@@ -25,6 +26,27 @@ function StudentForm({ onSuccess }: StudentFormProps) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (student.name === '') { // Password is required for new student
+      setError("Student name is required.");
+      setLoading(false);
+      return;
+    }
+
+    if (student.date_of_birth === '') {
+      setError("Student date of birth is required.");
+      setLoading(false);
+      return;
+    }
+
+    const date = new Date(student.date_of_birth);
+    if (!isNaN(date.getTime())) {
+      student.date_of_birth = date.toISOString();
+    } else {
+      setError("Invalid date of birth format.");
+      setLoading(false);
+      return;
+    }
 
     try {
       await createStudent(student);
@@ -57,6 +79,19 @@ function StudentForm({ onSuccess }: StudentFormProps) {
           />
         </div>
         <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="password">
+            Password:
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={student.password}
+            onChange={handleChange}
+            className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <div className="mb-4">
           <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="date_of_birth">
             Date of Birth:
           </label>
@@ -67,6 +102,7 @@ function StudentForm({ onSuccess }: StudentFormProps) {
             value={student.date_of_birth}
             onChange={handleChange}
             className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
           />
         </div>
         <div className="mb-4">

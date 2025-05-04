@@ -4,9 +4,11 @@ import { getEnrollments, deleteEnrollment, getStudents, getCourses } from '../..
 
 interface EnrollmentListProps {
   onAddEnrollment: () => void;
+  userRole: 'student' | 'faculty';
+  userId: number;
 }
 
-function EnrollmentList({ onAddEnrollment }: EnrollmentListProps) {
+function EnrollmentList({ onAddEnrollment, userRole, userId }: EnrollmentListProps) {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -15,23 +17,26 @@ function EnrollmentList({ onAddEnrollment }: EnrollmentListProps) {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [userRole, userId]); // Refetch if user or role changes
 
   const fetchData = async () => {
+    setLoading(true);
+    setError(null);
     try {
+      // Backend handles filtering for student role
       const [enrollmentsRes, studentsRes, coursesRes] = await Promise.all([
         getEnrollments(),
-        getStudents(),
-        getCourses(),
+        getStudents(), // Fetch all students to map IDs to names (faculty view)
+        getCourses(), // Fetch all courses to map IDs to titles
       ]);
       setEnrollments(enrollmentsRes.data);
       setStudents(studentsRes.data);
       setCourses(coursesRes.data);
-      setLoading(false);
     } catch (err) {
       setError('Failed to fetch data');
-      setLoading(false);
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,7 +55,7 @@ function EnrollmentList({ onAddEnrollment }: EnrollmentListProps) {
     if (window.confirm('Are you sure you want to delete this enrollment?')) {
       try {
         await deleteEnrollment(id);
-        fetchData();
+        fetchData(); // Refresh list after deletion
       } catch (err) {
         alert('Failed to delete enrollment');
         console.error(err);
@@ -69,49 +74,56 @@ function EnrollmentList({ onAddEnrollment }: EnrollmentListProps) {
   return (
     <div className="bg-white p-6 rounded-lg shadow-xl">
       <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Enrollments</h2>
-      <button
-        onClick={onAddEnrollment}
-        className="mb-6 bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition duration-200 ease-in-out shadow-md"
-      >
-        Add New Enrollment
-      </button>
+      {userRole === 'faculty' && ( // Only faculty can add enrollments
+        <button
+          onClick={onAddEnrollment}
+          className="mb-6 bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition duration-200 ease-in-out shadow-md"
+        >
+          Add New Enrollment
+        </button>
+      )}
       {enrollments.length === 0 ? (
         <p className="text-gray-600">No enrollments found.</p>
-      ): (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200 rounded-md overflow-hidden">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">ID</th>
-                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Student</th>
-                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Course</th>
-                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Enrollment Date</th>
-                <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {enrollments.map((enrollment, index) => (
-                <tr key={enrollment.id} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100 transition duration-150 ease-in-out`}>
-                  <td className="py-3 px-4 border-b text-sm text-gray-700">{enrollment.id}</td>
-                  <td className="py-3 px-4 border-b text-sm text-gray-700">{getStudentName(enrollment.student_id)}</td>
-                  <td className="py-3 px-4 border-b text-sm text-gray-700">{getCourseTitle(enrollment.course_id)}</td>
-                  <td className="py-3 px-4 border-b text-sm text-gray-700">{enrollment.enrollment_date ? new Date(enrollment.enrollment_date).toLocaleDateString() : 'N/A'}</td>
-                  <td className="py-3 px-4 border-b text-sm text-gray-700">
-                    <button
-                      onClick={() => handleDelete(enrollment.id)}
-                      className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition duration-200 ease-in-out text-xs"
-                    >
-                      Delete
-                    </button>
-                  </td>
+      ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-200 rounded-md overflow-hidden">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">ID</th>
+                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Student</th>
+                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Course</th>
+                  <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Enrollment Date</th>
+                  {userRole === 'faculty' && ( // Only faculty sees actions column
+                    <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
+                  )}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {enrollments.map((enrollment, index) => (
+                  <tr key={enrollment.id} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100 transition duration-150 ease-in-out`}>
+                    <td className="py-3 px-4 border-b text-sm text-gray-700">{enrollment.id}</td>
+                    <td className="py-3 px-4 border-b text-sm text-gray-700">{getStudentName(enrollment.student_id)}</td>
+                    <td className="py-3 px-4 border-b text-sm text-gray-700">{getCourseTitle(enrollment.course_id)}</td>
+                    <td className="py-3 px-4 border-b text-sm text-gray-700">{enrollment.enrollment_date ? new Date(enrollment.enrollment_date).toLocaleDateString() : 'N/A'}</td>
+                    {userRole === 'faculty' && ( // Only faculty sees action buttons
+                      <td className="py-3 px-4 border-b text-sm text-gray-700">
+                        <button
+                          onClick={() => handleDelete(enrollment.id)}
+                          className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition duration-200 ease-in-out text-xs"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
     </div>
   );
 }
 
 export default EnrollmentList;
+

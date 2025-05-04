@@ -1,44 +1,45 @@
 package routes
 
 import (
-	"backend/handlers"
+  "backend/handlers"
+  "backend/middleware"
 
-	"github.com/gofiber/fiber/v3"
+  "github.com/gofiber/fiber/v3"
 )
 
-// SetupRoutes defines the API routes for the application
 func SetupRoutes(app fiber.Router) {
-	// Student routes
-	studentGroup := app.Group("/students")
-	studentGroup.Post("/", handlers.CreateStudent)
-	studentGroup.Get("/", handlers.GetStudents)
-	studentGroup.Get("/:id", handlers.GetStudent)
-	studentGroup.Put("/:id", handlers.UpdateStudent)
-	studentGroup.Delete("/:id", handlers.DeleteStudent)
-	studentGroup.Get("/:id/transcript", handlers.GetStudentTranscript)
-	studentGroup.Get("/:id/gpa", handlers.CalculateGPA)
+  app.Post("/login", handlers.Login)
 
-	// Course routes
-	courseGroup := app.Group("/courses")
-	courseGroup.Post("/", handlers.CreateCourse)
-	courseGroup.Get("/", handlers.GetCourses)
-	courseGroup.Get("/:id", handlers.GetCourse)
-	courseGroup.Put("/:id", handlers.UpdateCourse)
-	courseGroup.Delete("/:id", handlers.DeleteCourse)
+  app.Use(middleware.AuthRequired)
 
-	// Enrollment routes
-	enrollmentGroup := app.Group("/enrollments")
-	enrollmentGroup.Post("/", handlers.EnrollStudent)
-	enrollmentGroup.Get("/", handlers.GetEnrollments)
-	enrollmentGroup.Get("/:id", handlers.GetEnrollment)
-	enrollmentGroup.Delete("/:id", handlers.DeleteEnrollment)
+  studentGroup := app.Group("/students")
+  studentGroup.Post("/", middleware.FacultyOnly, handlers.CreateStudent)
+  studentGroup.Put("/:id", middleware.FacultyOnly, handlers.UpdateStudent)
+  studentGroup.Delete("/:id", middleware.FacultyOnly, handlers.DeleteStudent)
 
-	// Grade routes
-	gradeGroup := app.Group("/grades")
-	gradeGroup.Post("/", handlers.AddGrade)
-	gradeGroup.Get("/", handlers.GetGrades)
-	gradeGroup.Get("/:id", handlers.GetGrade)
-	gradeGroup.Put("/:id", handlers.UpdateGrade)
-	gradeGroup.Delete("/:id", handlers.DeleteGrade)
+  studentGroup.Get("/", handlers.GetStudents)
+  studentGroup.Get("/:id", handlers.GetStudent)
+  studentGroup.Get("/:id/transcript", handlers.GetStudentTranscript)
+  studentGroup.Get("/:id/gpa", handlers.CalculateGPA)
+
+  courseGroup := app.Group("/courses")
+  courseGroup.Get("/", handlers.GetCourses)
+  courseGroup.Get("/:id", handlers.GetCourse)
+  courseGroup.Post("/", middleware.FacultyOnly, handlers.CreateCourse)
+  courseGroup.Put("/:id", middleware.FacultyOnly, handlers.UpdateCourse)
+  courseGroup.Delete("/:id", middleware.FacultyOnly, handlers.DeleteCourse)
+
+  enrollmentGroup := app.Group("/enrollments")
+  enrollmentGroup.Post("/", middleware.FacultyOnly, handlers.EnrollStudent)
+  enrollmentGroup.Delete("/:id", middleware.FacultyOnly, handlers.DeleteEnrollment)
+  enrollmentGroup.Get("/", handlers.GetEnrollments)
+  enrollmentGroup.Get("/:id", handlers.GetEnrollment)
+
+  gradeGroup := app.Group("/grades")
+  gradeGroup.Post("/", middleware.FacultyOnly, handlers.AddGrade)
+  gradeGroup.Put("/:id", middleware.FacultyOnly, handlers.UpdateGrade)
+  gradeGroup.Delete("/:id", middleware.FacultyOnly, handlers.DeleteGrade)
+  gradeGroup.Get("/", handlers.GetGrades)
+  gradeGroup.Get("/:id", handlers.GetGrade)
 }
 
