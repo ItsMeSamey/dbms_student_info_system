@@ -10,7 +10,7 @@ import (
   "backend/routes"
 
   utils "github.com/ItsMeSamey/go_utils"
-  "github.com/bytedance/sonic"
+  "github.com/goccy/go-json"
   "github.com/gofiber/fiber/v3"
   "github.com/gofiber/fiber/v3/middleware/cors"
   fiberRecover "github.com/gofiber/fiber/v3/middleware/recover"
@@ -24,8 +24,8 @@ func main() {
     Concurrency:        1024 * 1024,
     IdleTimeout:        30 * time.Second,
     DisableDefaultDate: true,
-    JSONEncoder:        sonic.Marshal,
-    JSONDecoder:        sonic.Unmarshal,
+    JSONEncoder:        json.Marshal,
+    JSONDecoder:        json.Unmarshal,
   })
 
   app.Use(cors.New())
