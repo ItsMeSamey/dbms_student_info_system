@@ -1,21 +1,21 @@
 import axios from 'axios';
 import { Student, Course, Enrollment, Grade, StudentTranscript, LoginRequest, AuthResponse } from '../types/types';
 
-const API_URL = 'http://127.0.0.1:3000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+	baseURL: API_URL,
+	headers: {
+		'Content-Type': 'application/json',
+	},
 });
 
 export const setAuthToken = (token: string | null) => {
-  if (token) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  } else {
-    delete api.defaults.headers.common['Authorization'];
-  }
+	if (token) {
+		api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+	} else {
+		delete api.defaults.headers.common['Authorization'];
+	}
 };
 
 export const login = (credentials: LoginRequest) => api.post<AuthResponse>('/login', credentials);
@@ -34,7 +34,11 @@ export const createCourse = (course: Course) => api.post<Course>('/courses', cou
 export const updateCourse = (id: number, course: Course) => api.put<void>(`/courses/${id}`, course);
 export const deleteCourse = (id: number) => api.delete<void>(`/courses/${id}`);
 
-export const getEnrollments = () => api.get<Enrollment[]>('/enrollments');
+
+export const getEnrollments = (studentId?: number) => {
+	const params = studentId !== undefined ? { student_id: studentId } : {};
+	return api.get<Enrollment[]>('/enrollments', { params });
+};
 export const getEnrollment = (id: number) => api.get<Enrollment>(`/enrollments/${id}`);
 export const createEnrollment = (enrollment: Enrollment) => api.post<Enrollment>('/enrollments', enrollment);
 export const deleteEnrollment = (id: number) => api.delete<void>(`/enrollments/${id}`);

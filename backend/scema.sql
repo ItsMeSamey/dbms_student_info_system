@@ -41,11 +41,11 @@ CREATE TABLE grades (
   id SERIAL PRIMARY KEY,
   enrollment_id INT NOT NULL REFERENCES enrollments(id) ON DELETE CASCADE,
   grade DECIMAL(3, 2),
-  semester VARCHAR(50) NOT NULL,
+  semester INT NOT NULL,
   UNIQUE (enrollment_id, semester)
 );
 
-
+-- Seed data - NOTE: Passwords should be hashed in a real application
 INSERT INTO students (name, password, date_of_birth, address, contact, program) VALUES
 ('Alice Smith', '', '2002-05-15', '123 Main St, Anytown', '555-1234', 'Computer Science'),
 ('Bob Johnson', '', '2003-11-20', '456 Oak Ave, Somewhere', '555-5678', 'Electrical Engineering'),
@@ -59,11 +59,11 @@ INSERT INTO faculty (name, password, date_of_birth, info) VALUES
 ('prof_jones', '', '1980-12-03', 'Dr. Sarah Jones, Professor of History');
 
 INSERT INTO courses (code, title, credits) VALUES
-('CS101', 'Introduction to Programming', 3),
-('EE201', 'Circuit Analysis', 4),
-('PHY101', 'General Physics I', 4),
-('HIS201', 'World History II', 3),
-('IR301', 'Global Politics', 3);
+('CS101', 'Introduction to Programming', 3.00),
+('EE201', 'Circuit Analysis', 4.00),
+('PHY101', 'General Physics I', 4.00),
+('HIS201', 'World History II', 3.00),
+('IR301', 'Global Politics', 3.00);
 
 INSERT INTO enrollments (student_id, course_id, enrollment_date) VALUES
 (1, 1, '2023-09-01'),
@@ -76,12 +76,11 @@ INSERT INTO enrollments (student_id, course_id, enrollment_date) VALUES
 (2, 1, '2024-01-15');
 
 INSERT INTO grades (enrollment_id, grade, semester) VALUES
-(1, 3.8, 'Fall 2023'),
-(2, 3.5, 'Fall 2023'),
-(3, 4.0, 'Fall 2023'),
-(4, 3.2, 'Fall 2023'),
-(5, 3.9, 'Fall 2023'),
-(6, 3.7, 'Fall 2023'),
-(7, NULL, 'Spring 2024'),
-(8, NULL, 'Spring 2024');
+(1, 3.80, 20231),
+(2, 3.50, 20231),
+(3, 4.00, 20231),
+(4, 3.20, 20231),
+(5, 3.90, 20231),
+(6, 3.70, 20231),
+(7, 3.00, 20242);
 

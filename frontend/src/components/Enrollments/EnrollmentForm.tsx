@@ -11,27 +11,31 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
     student_id: 0,
     course_id: 0,
   });
-  const [students, setStudents] = useState<Student[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [students, setStudents] = useState<Student[]>([]); // Needed to populate dropdown
+  const [courses, setCourses] = useState<Course[]>([]); // Needed to populate dropdown
+  const [loading, setLoading] = useState(false); // For form submission
   const [error, setError] = useState<string | null>(null);
-  const [dataLoading, setDataLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true); // For initial data fetch
 
   useEffect(() => {
     fetchStudentsAndCourses();
   }, []);
 
   const fetchStudentsAndCourses = async () => {
+    setDataLoading(true);
+    setError(null); // Clear errors before fetching
     try {
+      // Fetch students and courses to populate dropdowns
+      // TODO: Backend getStudents/getCourses should be filtered for faculty if needed
       const [studentsRes, coursesRes] = await Promise.all([
-        getStudents(),
-        getCourses(),
+        getStudents(), // Consider filtering this on backend for faculty
+        getCourses(), // Consider filtering this on backend for faculty
       ]);
       setStudents(studentsRes.data);
       setCourses(coursesRes.data);
       setDataLoading(false);
-    } catch (err) {
-      setError('Failed to fetch students and courses');
+    } catch (err: any) {
+      setError(`Failed to load data for form: ${err.response?.data?.error || err.message}`);
       setDataLoading(false);
       console.error(err);
     }
@@ -41,15 +45,16 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
     const { name, value } = e.target;
     setEnrollment({
       ...enrollment,
-      [name]: parseInt(value, 10),
+      [name]: parseInt(value, 10), // Parse selected value as integer ID
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    setLoading(true); // Show loading indicator for submission
+    setError(null); // Clear errors before submission
 
+    // Client-side validation
     if (enrollment.student_id === 0 || enrollment.course_id === 0) {
       setError("Please select a student and a course.");
       setLoading(false);
@@ -58,13 +63,13 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
 
     try {
       await createEnrollment(enrollment);
-      alert('Enrollment created successfully!');
-      onSuccess();
+      alert('Enrollment created successfully!'); // Consider a better UI notification
+      onSuccess(); // Call success callback to navigate back
     } catch (err: any) {
       setError(`Failed to create enrollment: ${err.response?.data?.error || err.message}`);
       console.error(err);
     } finally {
-      setLoading(false);
+      setLoading(false); // Hide loading indicator
     }
   };
 
@@ -72,7 +77,8 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
     return <div className="text-center text-gray-600">Loading data for enrollment form...</div>;
   }
 
-  if (error && dataLoading) {
+  // Show error if initial data fetch failed
+  if (error && !dataLoading) {
     return <div className="text-center text-red-600">{error}</div>;
   }
 
@@ -121,20 +127,21 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
             ))}
           </select>
         </div>
-        {error && <p className="text-red-600 text-xs italic mb-4">{error}</p>}
+        {/* Show submission error if any */}
+        {error && !dataLoading && <p className="text-red-600 text-xs italic mb-4">{error}</p>}
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-200 ease-in-out ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={loading}
+            className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-200 ease-in-out ${loading || dataLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={loading || dataLoading} // Disable while submitting or initial data loading
           >
-            {loading ? 'Saving...' : 'Create Enrollment'}
+            {loading ? 'Creating...' : 'Create Enrollment'}
           </button>
           <button
             type="button"
             onClick={onSuccess}
             className="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800"
-            disabled={loading}
+            disabled={loading || dataLoading} // Disable while submitting or initial data loading
           >
             Cancel
           </button>

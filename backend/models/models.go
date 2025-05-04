@@ -7,9 +7,9 @@ import (
 // Database Models
 
 type Student struct {
-  ID          int        `json:"id,omitempty"`
-  Name        string     `json:"name"`
-  Password    string     `json:"password"`
+  ID          int       `json:"id,omitempty"`
+  Name        string    `json:"name"`
+  Password    string    `json:"password"`
   DateOfBirth time.Time `json:"date_of_birth"`
   Address     string    `json:"address,omitempty"`
   Contact     string    `json:"contact,omitempty"`
@@ -21,7 +21,7 @@ type Faculty struct {
   Name        string    `json:"name"`
   Password    string    `json:"password"`
   DateOfBirth time.Time `json:"date_of_birth"`
-  Info        string   `json:"info,omitempty"`
+  Info        string    `json:"info,omitempty"`
 }
 
 type Course struct {
@@ -42,23 +42,25 @@ type Grade struct {
   ID           int      `json:"id,omitempty"`
   EnrollmentID int      `json:"enrollment_id"`
   Grade        *float64 `json:"grade"`
-  Semester     string   `json:"semester"`
+  Semester     int      `json:"semester"`
 }
 
 // API Models
 
 type StudentTranscript struct {
-  StudentID   int                `json:"student_id"`
-  StudentName string             `json:"student_name"`
+  StudentID   int              `json:"student_id"`
+  StudentName string           `json:"student_name"`
   Courses     []TranscriptCourse `json:"courses"`
 }
 
 type TranscriptCourse struct {
-  CourseCode  string   `json:"course_code"`
-  CourseTitle string   `json:"course_title"`
-  Credits     int      `json:"credits"`
-  Grade       *float64 `json:"grade"`
-  Semester    *string  `json:"semester"`
+  EnrollmentID int      `json:"enrollment_id"`
+  CourseCode   string   `json:"course_code"`
+  CourseTitle  string   `json:"course_title"`
+  Credits      float32  `json:"credits"` 
+  GradeID      *int     `json:"grade_id,omitempty"`
+  Grade        *float64 `json:"grade"`
+  Semester     *int     `json:"semester"`
 }
 
 type LoginRequest struct {

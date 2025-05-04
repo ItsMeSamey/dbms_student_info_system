@@ -10,8 +10,8 @@ interface EnrollmentListProps {
 
 function EnrollmentList({ onAddEnrollment, userRole, userId }: EnrollmentListProps) {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [students, setStudents] = useState<Student[]>([]); // Needed to map student_id to name
+  const [courses, setCourses] = useState<Course[]>([]); // Needed to map course_id to title
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,17 +23,19 @@ function EnrollmentList({ onAddEnrollment, userRole, userId }: EnrollmentListPro
     setLoading(true);
     setError(null);
     try {
-      // Backend handles filtering for student role
+      // Fetch enrollments. Backend handles filtering for student role.
+      // Faculty view needs student and course data to display names/titles.
+      // TODO: Backend getStudents/getCourses should be filtered for faculty if needed
       const [enrollmentsRes, studentsRes, coursesRes] = await Promise.all([
-        getEnrollments(),
-        getStudents(), // Fetch all students to map IDs to names (faculty view)
-        getCourses(), // Fetch all courses to map IDs to titles
+        getEnrollments(), // Fetch enrollments (backend filters for student, gets all for faculty)
+        getStudents(), // Fetch all students (consider filtering this on backend for faculty)
+        getCourses(), // Fetch all courses (consider filtering this on backend for faculty)
       ]);
       setEnrollments(enrollmentsRes.data);
       setStudents(studentsRes.data);
       setCourses(coursesRes.data);
-    } catch (err) {
-      setError('Failed to fetch data');
+    } catch (err: any) {
+      setError(`Failed to fetch data: ${err.response?.data?.error || err.message}`);
       console.error(err);
     } finally {
       setLoading(false);
@@ -50,15 +52,22 @@ function EnrollmentList({ onAddEnrollment, userRole, userId }: EnrollmentListPro
     return course ? course.title : 'Unknown Course';
   };
 
+
   const handleDelete = async (id: number | undefined) => {
     if (id === undefined) return;
     if (window.confirm('Are you sure you want to delete this enrollment?')) {
+      setLoading(true); // Show loading indicator for delete
+      setError(null);
       try {
         await deleteEnrollment(id);
+        alert('Enrollment deleted successfully!'); // Consider a better UI notification
         fetchData(); // Refresh list after deletion
-      } catch (err) {
-        alert('Failed to delete enrollment');
+      } catch (err: any) {
+        setError(`Failed to delete enrollment: ${err.response?.data?.error || err.message}`);
+        alert('Failed to delete enrollment'); // Use a better UI notification
         console.error(err);
+      } finally {
+        setLoading(false); // Hide loading indicator
       }
     }
   };

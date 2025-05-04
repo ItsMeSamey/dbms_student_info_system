@@ -34,15 +34,17 @@ export interface Grade {
   id?: number;
   enrollment_id: number;
   grade?: number;
-  semester: string;
+  semester: number;
 }
 
 export interface TranscriptCourse {
+  enrollment_id: number;
   course_code: string;
   course_title: string;
   credits: number;
+  grade_id?: number;
   grade?: number;
-  semester?: string;
+  semester?: number;
 }
 
 export interface StudentTranscript {

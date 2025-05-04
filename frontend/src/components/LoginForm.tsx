@@ -37,10 +37,10 @@ function LoginForm({ onLogin, loading, error }: LoginFormProps) {
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="id">
-            ID: {/* Changed label from Account to ID */}
+            ID:
           </label>
           <input
-            type="number" // Changed input type to number
+            type="number"
             id="id"
             name="id"
             value={credentials.id === 0 ? '' : credentials.id}
