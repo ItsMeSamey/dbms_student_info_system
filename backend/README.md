@@ -1,21 +1,10 @@
-# Student Information System
+# Student Information System (Backend)
 
-A web application designed to manage academic data for students and faculty. It provides different interfaces and capabilities based on user roles, with a significant portion of the business logic implemented within the database using PL/SQL.
-
-## Features
-
-* **Faculty Portal:** Faculty can view lists of students, courses, and enrollments, and access detailed student information including transcripts for grade management.
-* **User Authentication:** Secure login for both students and faculty members.
-* **Student Management (Faculty Only):** Faculty can perform CRUD (Create, Read, Update, Delete) operations on student records.
-* **Course Management (Faculty Only):** Faculty can manage course information (Create, Read, Update, Delete).
-* **Enrollment Management (Faculty Only):** Faculty can enroll students in courses and remove enrollments.
-* **Grade Management (Faculty Only):** Faculty can add, edit, and delete grades for student enrollments.
-
-* **Student Portal:** Students can view their personal information, academic transcript, and calculated GPA.
+This is the backend component of a web application designed to manage academic data for students and faculty. It provides an API for data management and retrieval, with a significant portion of the business logic implemented within the PostgreSQL database using PL/SQL.
 
 ## Architecture Overview
 
-This project follows a layered architecture. The frontend is a React application that communicates with a Go backend via RESTful APIs. A key aspect of the backend is that it delegates much of the data interaction, validation, and core business logic to the PostgreSQL database using **PL/SQL functions and procedures**.
+This project follows a layered architecture. The backend is a Go application that exposes a RESTful API. A key aspect of this backend is that it delegates much of the data interaction, validation, and core business logic to the PostgreSQL database using **PL/SQL functions and procedures**.
 
 The Go backend acts as a thin layer, primarily handling:
 * Receiving HTTP requests.
@@ -23,12 +12,12 @@ The Go backend acts as a thin layer, primarily handling:
 * Authenticating users (by calling a PL/SQL function).
 * Calling the appropriate PL/SQL function or procedure in the database.
 * Handling database responses and errors (including interpreting PL/SQL exceptions).
-* Formatting responses for the frontend.
+* Formatting responses for the client.
 
 The PL/SQL layer handles:
 * Direct database queries (SELECT, INSERT, UPDATE, DELETE).
 * Data validation (checking for required fields, valid IDs, unique constraints).
-* Authorization checks based on the `user_id` and `user_role` passed from the backend.
+* Authorization checks based on the `user_id` and `user_role` parameters passed from the backend.
 * Complex operations like calculating GPA and generating transcripts.
 * Raising exceptions to signal errors or access violations back to the backend.
 
@@ -40,6 +29,7 @@ The PL/SQL layer handles:
 * **Fiber:** A web framework for building the API.
 * **pgx:** A high-performance PostgreSQL driver for Go.
 * **golang-jwt/jwt/v5:** For handling JWT authentication.
+* **Viper:** Used for configuration (e.g., reading JWT secret from `.env`).
 
 **Database:**
 
@@ -48,7 +38,7 @@ The PL/SQL layer handles:
 
 ## Key PL/SQL Functions and Procedures
 
-The following PL/SQL functions and procedures are central to the application's logic:
+The following PL/SQL functions and procedures are central to the application's logic, executed by the backend:
 
 * `authenticate_user(p_id INT, p_password VARCHAR, p_role VARCHAR)`:
     * **Purpose:** Verifies user credentials against the `students` or `faculty` tables.
@@ -92,7 +82,7 @@ The following PL/SQL functions and procedures are central to the application's l
 
 * `get_all_courses()`:
     * **Purpose:** Retrieves all course records.
-    * **Logic:** Selects all from `courses`. Authorization is expected to be handled by the calling Go handler's middleware.
+    * **Logic:** Selects all from `courses`. Authorization is expected to be handled by the calling Go handler's middleware or within other PL/SQL functions that use this.
     * **Returns:** A set of `courses` records.
 
 * `get_course_by_id(p_course_id INT)`:
@@ -176,9 +166,27 @@ The following PL/SQL functions and procedures are central to the application's l
 
 ## Usage (Backend only)
 
-1.  Install Go.
-3.  Set up backend dependencies (`go mod tidy`).
-4.  Configure backend `.env` (DATABASE\_URL, JWT\_SECRET). **Note: Securely manage secrets in production.**
-5.  **Run the `scema.sql` script on your PostgreSQL database.** This creates tables and defines all PL/SQL functions/procedures. **Warning: This script drops existing tables and data.**
-6.  Start the backend (`go run main.go`).
+1. Install Go.
+2. Set up backend dependencies (`go mod tidy`).
+3. Configure backend `.env` (DATABASE\_URL, JWT\_SECRET). **Note: Securely manage secrets in production.**
+4. **Run the `scema.sql` script on your PostgreSQL database.** This creates tables and defines all PL/SQL functions/procedures. **Warning: This script drops existing tables and data.**
+5. Start the backend (`go run main.go`).
+6. The backend API will be available for interaction (e.g., using tools like curl, Postman, or a separate frontend application).
+
+## Security Considerations
+
+* **Insecure Password Handling:** Passwords are still handled in plain text in the PL/SQL `authenticate_user` function and potentially stored insecurely. **Implement strong password hashing (e.g., bcrypt, Argon2) on the backend *before* storing, and modify `authenticate_user` to verify against the hash.**
+* **Incomplete Authorization:** While PL/SQL functions include basic role/ID checks, more granular authorization (e.g., faculty restricted to certain courses/students) is not implemented.
+
+## Future Improvements
+
+* Implement secure password hashing and verification.
+* Implement secure secret management.
+* Enhance granular authorization logic in PL/SQL.
+* Implement rate limiting.
+* Improve error handling.
+* Add pagination.
+* Implement a secure password reset flow.
+* Add comprehensive testing.
+* Set up HTTPS.
 
