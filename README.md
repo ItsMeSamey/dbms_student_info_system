@@ -1,5 +1,8 @@
 # Student Information System
 
+> [!NOTE]
+> There are separate [backend/readme.md](backend/readme.md) and a [frontend/readme.md](frontend/readme.md) files for the backend and frontend respectively.
+
 A simple web application for managing student, course, enrollment, and grade information. The system has separate views and functionalities for students and faculty members.
 
 ## Features
@@ -87,32 +90,7 @@ The frontend should start on `http://localhost:5173` by default.
 3.  Start the frontend application (see Frontend Setup).
 4.  Open your web browser and navigate to the frontend URL (e.g., `http://localhost:5173`).
 
-## API Endpoints (Overview)
-
-The backend provides RESTful API endpoints for managing the system data. Authentication is required for most endpoints.
-
-* `/login` \[POST]: Authenticate users (student or faculty).
-* `/students` \[GET, POST]: Get all students (Faculty) or own student (Student), Create student (Faculty).
-* `/students/:id` \[GET, PUT, DELETE]: Get, Update, Delete a specific student.
-* `/students/:id/transcript` \[GET]: Get transcript for a student.
-* `/students/:id/gpa` \[GET]: Calculate GPA for a student.
-* `/courses` \[GET, POST]: Get all courses, Create course (Faculty).
-* `/courses/:id` \[GET, PUT, DELETE]: Get, Update, Delete a specific course.
-* `/enrollments` \[GET, POST]: Get all enrollments (Faculty) or own enrollments (Student), Create enrollment (Faculty). Supports `?student_id=<id>` query for faculty.
-* `/enrollments/:id` \[GET, DELETE]: Get, Delete a specific enrollment.
-* `/grades` \[GET, POST]: Get all grades (Faculty) or own grades (Student), Add grade (Faculty).
-* `/grades/:id` \[GET, PUT, DELETE]: Get, Update, Delete a specific grade.
-
 ## Authentication
 
 The application uses JWT (JSON Web Tokens) for authentication. Upon successful login, the backend returns a JWT, which the frontend stores (currently in `localStorage`) and sends in the `Authorization: Bearer <token>` header for subsequent authenticated requests.
-
-## Future Improvements
-
-* Implement secure password hashing.
-* Implement backend rate limiting for login attempts.
-* Implement pagination for large lists (students, courses, enrollments, grades).
-* Enhance UI/UX and accessibility.
-* Write unit and integration tests for both backend and frontend.
-* Set up HTTPS for secure communication.
 
